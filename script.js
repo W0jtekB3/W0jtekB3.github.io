@@ -33,8 +33,8 @@ $(document).ready(function() {
     $.ajax({
       url: requestUrl,
       method: 'GET',
-      success: handleDatatableRender
-    });
+        success: handleDatatableRender
+     });
   }
 
   function handleTaskUpdateRequest() {
@@ -99,7 +99,7 @@ $(document).ready(function() {
         if(data.status === 200) {
           getAllTasks();
         }
-      }
+     }
     });
   }
 
@@ -115,6 +115,7 @@ $(document).ready(function() {
   }
 
   $('[data-task-add-form]').on('submit', handleTaskSubmitRequest);
+
 
   tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
   tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
