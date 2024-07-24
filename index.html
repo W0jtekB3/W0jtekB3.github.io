@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>CRUD</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Correctly linked CSS file -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,500i,700,700i&subset=latin-ext" rel="stylesheet">
 </head>
 <body>
@@ -16,7 +17,7 @@
     <form
         class="datatable__row datatable__row--add"
         method="POST"
-        action="https://3a098740-c4fb-4c8f-bc54-ac597329dea8-00-2fge5iq601k11.picard.replit.dev/v1/tasks"
+        action="http://localhost:8080/v1/tasks"
         data-task-add-form
     >
       <fieldset class="datatable__row-section datatable__row-section--input-section">
@@ -73,7 +74,7 @@
   </form>
 </div>
 
-<script src="jquery-3.7.1.min.js"></script>
+<script src="jquery-3.3.1.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
