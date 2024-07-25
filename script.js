@@ -3,7 +3,7 @@ $(document).ready(function() {
   var datatableRowTemplate = $('[data-datatable-row-template]').children()[0];
   var tasksContainer = $('[data-tasks-container]');
 
-  // init
+  // Init
   getAllTasks();
 
   function createElement(data) {
@@ -104,8 +104,9 @@ $(document).ready(function() {
       success: function(data) {
         createElement(data).appendTo(tasksContainer);
       },
-      error: function() {
-        alert('Failed to create task');
+      error: function(jqXHR) {
+        console.error('Error:', jqXHR);
+        alert('Failed to create task. Error code: ' + jqXHR.status);
       }
     });
   }
