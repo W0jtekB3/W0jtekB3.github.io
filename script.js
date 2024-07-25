@@ -40,7 +40,7 @@ $(document).ready(function() {
   }
 
   function handleTaskUpdateRequest() {
-    var parentEl = $(this).parent().parent();
+    var parentEl = $(this).parents('[data-task-id]');
     var taskId = parentEl.attr('data-task-id');
     var taskTitle = parentEl.find('[data-task-name-input]').val();
     var taskContent = parentEl.find('[data-task-content-input]').val();
@@ -50,8 +50,7 @@ $(document).ready(function() {
       url: requestUrl,
       method: 'PUT',
       processData: false,
-      contentType: "application/json; charset=utf-8",
-      dataType: 'json',
+      contentType: 'application/json',
       data: JSON.stringify({
         id: taskId,
         title: taskTitle,
@@ -59,8 +58,8 @@ $(document).ready(function() {
       }),
       success: function(data) {
         parentEl.attr('data-task-id', data.id).toggleClass('datatable__row--editing');
-        parentEl.find('[data-task-name-paragraph]').text(taskTitle);
-        parentEl.find('[data-task-content-paragraph]').text(taskContent);
+        parentEl.find('[data-task-name-paragraph]').text(data.title);
+        parentEl.find('[data-task-content-paragraph]').text(data.content);
       },
       error: function() {
         alert('Failed to update task');
@@ -69,12 +68,12 @@ $(document).ready(function() {
   }
 
   function handleTaskDeleteRequest() {
-    var parentEl = $(this).parent().parent();
+    var parentEl = $(this).parents('[data-task-id]');
     var taskId = parentEl.attr('data-task-id');
-    var requestUrl = apiRoot;
+    var requestUrl = apiRoot + '?taskId=' + taskId;
 
     $.ajax({
-      url: requestUrl + '/' + taskId,
+      url: requestUrl,
       method: 'DELETE',
       success: function() {
         parentEl.slideUp(400, function() { parentEl.remove(); });
@@ -82,7 +81,7 @@ $(document).ready(function() {
       error: function() {
         alert('Failed to delete task');
       }
-    })
+    });
   }
 
   function handleTaskSubmitRequest(event) {
@@ -97,24 +96,22 @@ $(document).ready(function() {
       url: requestUrl,
       method: 'POST',
       processData: false,
-      contentType: "application/json; charset=utf-8",
-      dataType: 'json',
+      contentType: 'application/json',
       data: JSON.stringify({
         title: taskTitle,
         content: taskContent
       }),
-      complete: function(data) {
-        if (data.status === 200) {
-          getAllTasks();
-        } else {
-          alert('Failed to create task');
-        }
+      success: function(data) {
+        createElement(data).appendTo(tasksContainer);
+      },
+      error: function() {
+        alert('Failed to create task');
       }
     });
   }
 
   function toggleEditingState() {
-    var parentEl = $(this).parent().parent();
+    var parentEl = $(this).parents('[data-task-id]');
     parentEl.toggleClass('datatable__row--editing');
 
     var taskTitle = parentEl.find('[data-task-name-paragraph]').text();
@@ -126,8 +123,8 @@ $(document).ready(function() {
 
   $('[data-task-add-form]').on('submit', handleTaskSubmitRequest);
 
-  tasksContainer.on('click', '[data-task-edit-button]', toggleEditingState);
-  tasksContainer.on('click', '[data-task-edit-abort-button]', toggleEditingState);
-  tasksContainer.on('click', '[data-task-submit-update-button]', handleTaskUpdateRequest);
-  tasksContainer.on('click', '[data-task-delete-button]', handleTaskDeleteRequest);
+  tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
+  tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
+  tasksContainer.on('click','[data-task-submit-update-button]', handleTaskUpdateRequest);
+  tasksContainer.on('click','[data-task-delete-button]', handleTaskDeleteRequest);
 });
