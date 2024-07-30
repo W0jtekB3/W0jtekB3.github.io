@@ -1,9 +1,10 @@
 $(document).ready(function() {
+
   var apiRoot = 'https://3a098740-c4fb-4c8f-bc54-ac597329dea8-00-2fge5iq601k11.picard.replit.dev/v1/tasks';
   var datatableRowTemplate = $('[data-datatable-row-template]').children()[0];
   var tasksContainer = $('[data-tasks-container]');
 
-  // Initialize
+  // init
   getAllTasks();
 
   function createElement(data) {
@@ -32,12 +33,8 @@ $(document).ready(function() {
     $.ajax({
       url: requestUrl,
       method: 'GET',
-      success: handleDatatableRender,
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to fetch tasks:', textStatus, errorThrown);
-        alert('Failed to fetch tasks');
-      }
-    });
+        success: handleDatatableRender
+     });
   }
 
   function handleTaskUpdateRequest() {
@@ -49,7 +46,7 @@ $(document).ready(function() {
 
     $.ajax({
       url: requestUrl,
-      method: 'PUT',
+      method: "PUT",
       processData: false,
       contentType: "application/json; charset=utf-8",
       dataType: 'json',
@@ -62,10 +59,6 @@ $(document).ready(function() {
         parentEl.attr('data-task-id', data.id).toggleClass('datatable__row--editing');
         parentEl.find('[data-task-name-paragraph]').text(taskTitle);
         parentEl.find('[data-task-content-paragraph]').text(taskContent);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to update task:', textStatus, errorThrown);
-        alert('Failed to update task');
       }
     });
   }
@@ -80,10 +73,6 @@ $(document).ready(function() {
       method: 'DELETE',
       success: function() {
         parentEl.slideUp(400, function() { parentEl.remove(); });
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to delete task:', textStatus, errorThrown);
-        alert('Failed to delete task');
       }
     })
   }
@@ -106,13 +95,11 @@ $(document).ready(function() {
         title: taskTitle,
         content: taskContent
       }),
-      success: function(data) {
-        getAllTasks(); // Refresh the list of tasks after a successful creation
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to create task:', textStatus, errorThrown, jqXHR.responseText);
-        alert('Failed to create task. Error code: ' + jqXHR.status);
-      }
+      complete: function(data) {
+        if(data.status === 200) {
+          getAllTasks();
+        }
+     }
     });
   }
 
@@ -129,8 +116,9 @@ $(document).ready(function() {
 
   $('[data-task-add-form]').on('submit', handleTaskSubmitRequest);
 
-  tasksContainer.on('click', '[data-task-edit-button]', toggleEditingState);
-  tasksContainer.on('click', '[data-task-edit-abort-button]', toggleEditingState);
-  tasksContainer.on('click', '[data-task-submit-update-button]', handleTaskUpdateRequest);
-  tasksContainer.on('click', '[data-task-delete-button]', handleTaskDeleteRequest);
+
+  tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
+  tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
+  tasksContainer.on('click','[data-task-submit-update-button]', handleTaskUpdateRequest);
+  tasksContainer.on('click','[data-task-delete-button]', handleTaskDeleteRequest);
 });
