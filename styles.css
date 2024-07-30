@@ -1,189 +1,158 @@
 html {
-  box-sizing: border-box;
-  font-size: 10px;
-  font-family: "Roboto", sans-serif;
-}
+   font-family: 'Roboto', sans-serif;
+   box-sizing: border-box;
+   font-size: 16px;
+   font-weight: normal;
+   margin: 0;
+   padding: 0; }
+
+input,
+textarea {
+   width: 100%;
+   padding: 5px;
+   margin: 0;
+   border-radius: 2px;
+   border: 1px solid #ccc; }
+
+body {
+   margin: 0;
+   padding: 0; }
 
 *,
 *::before,
 *::after {
-  box-sizing: inherit;
-  padding: 0;
-  margin: 0;
-}
-
-body {
-  background-color: #eee;
-  line-height: 1.5;
-}
-
-h1,
-h2 {
-  text-align: center;
-}
-
-h1.kodilla-heading {
-  font-size: 3rem;
-  padding: 5rem;
-}
-
-h1.kodilla-heading.kodilla-heading--main {
-  color: #fdb605;
-}
-
-h2 {
-  font-size: 2rem;
-  padding: 2rem 0;
-}
-
-.container {
-  width: 96%;
-  margin: 0 auto;
-}
+   box-sizing: inherit; }
 
 .crud {
-  background-color: #fff;
-  border-radius: .3rem;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, .3);
-}
+   margin-bottom: 20px; }
+
+.container {
+   padding-right: 15px;
+   padding-left: 15px;
+   margin-right: auto;
+   margin-left: auto; }
+
+@media (min-width: 768px) {
+   .container {
+    width: 750px; } }
+
+@media (min-width: 992px) {
+   .container {
+    width: 970px; } }
+
+@media (min-width: 1200px) {
+   .container {
+    width: 1170px; } }
+
+.kodilla-heading--main {
+   margin: 20px auto;
+   text-align: center;
+   font-size: 30px;
+   font-weight: 400; }
 
 .datatable__row {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.datatable__row + .datatable__row {
-  border-top: .1rem solid #eee;
-}
-
-.datatable__row--add {
-  padding: 2rem 0;
-}
+   display: flex;
+   flex-flow: row nowrap;
+   justify-content: flex-start;
+   align-items: stretch;
+   border: 1px solid #ccc;
+   border-bottom: none;
+   margin: 0; }
 
 .datatable__row-section-wrapper {
-  display: flex;
-}
+   display: flex;
+   flex-grow: 1;
+   justify-content: space-around; }
 
-.datatable__row-section {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-}
+.datatable__row:first-of-type {
+   border-top-left-radius: 4px;
+   border-top-right-radius: 4px; }
 
-.datatable__row-section--input-section {
-  width: 40rem;
-}
+.datatable__row:last-of-type {
+   border-bottom: 1px solid #ccc;
+   border-bottom-left-radius: 4px;
+   border-bottom-right-radius: 4px; }
 
-.datatable__row-section--button-section {
-  width: 25rem;
-  justify-content: center;
-  align-items: center;
-}
+.datatable__row input,
+.datatable__row textarea {
+   display: none; }
 
-.datatable__row-section--trello-section {
-  width: 30rem;
-  align-items: center;
-  justify-content: space-between;
-}
+.datatable__row .datatable__button--editing {
+   display: none; }
 
-.datatable__input-label {
-  display: none;
-}
-
-.datatable__input,
-.datatable__select,
-.datatable__button {
-  display: block;
-  width: 100%;
-  border-radius: .5rem;
-  border: .1rem solid #ccc;
-}
-
-.datatable__input:invalid,
-.datatable__textarea:invalid {
-  border: .2rem solid #ed7c7c;
-}
-
-.datatable__input:focus:invalid,
-.datatable__textarea:focus:invalid {
-  border: .2rem solid #e96b6b;
-}
-
-.datatable__input:focus,
-.datatable__textarea:focus {
-  border: .2rem solid #7cc8ed;
-}
-
-.datatable__input,
-.datatable__textarea {
-  padding: .7rem;
-}
-
-.datatable__textarea {
-  resize: vertical;
-}
-
-.datatable__field-value {
-  font-size: 1.5rem;
-  padding: .8rem 1rem;
-}
-
-.datatable__field-value::first-letter {
-  text-transform: uppercase;
-}
-
-.datatable__select {
-  padding: .8rem 1rem;
-  background: #fff;
-}
-
-.datatable__button {
-  padding: 1rem 0;
-  background-color: #eee;
-  font-size: 1.4rem;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-
-.datatable__button:hover {
-  background-color: #fdb605;
-}
-
-.datatable__button--editing {
-  display: none;
-}
+.datatable__row--editing input,
+.datatable__row--editing textarea {
+   display: block; }
 
 .datatable__row--editing .datatable__field-value {
-  display: none;
-}
+   display: none; }
 
-.datatable__row--editing .datatable__button--editing {
-  display: block;
-}
+.datatable__row--editing .datatable__button {
+   display: none; }
 
-.datatable__row--editing .datatable__button--not-editing {
-  display: none;
-}
+.datatable__row--editing .datatable__button--editing,
+.datatable__row--editing .datatable__button--card-creation {
+   display: block; }
 
-.datatable__row--editing .datatable__input {
-  display: block;
-}
+.datatable__row--add input,
+.datatable__row--add textarea {
+   display: block; }
 
-.datatable__row-section--trello-section .datatable__select,
-.datatable__row-section--trello-section .datatable__button {
-  margin-left: 1rem;
-}
+.datatable__field-value {
+  margin-bottom: 0;
+   font-size: 14px; }
 
-.datatable__row-section--trello-section .datatable__button {
-  width: 13rem;
-}
+.datatable__row-section {
+   border: none;
+   margin: 0;
+   padding: 10px;
+   flex-grow: 1; }
+
+.datatable__row-section--button-section,
+.datatable__row-section--trello-section {
+   margin-left: auto;
+   align-self: center;
+   flex-shrink: 1;
+   flex-grow: 0;
+   display: flex;
+   flex-flow: column nowrap;
+   justify-content: space-around;
+   align-items: center; }
+
+.datatable__input-label {
+   display: block;
+   text-align: left;
+   font-size: 14px;
+   margin: 5px auto;
+   font-weight: 500;
+   letter-spacing: 0.6px; }
+
+.datatable__button {
+   color: #fff;
+   background-color: #28a745;
+   display: block;
+   margin-bottom: 5px;
+   font-weight: 400;
+   text-align: center;
+   white-space: nowrap;
+   vertical-align: middle;
+   user-select: none;
+   border: 1px solid transparent;
+   padding: 8px 12px;
+   font-size: 12px;
+   min-width: 120px;
+   line-height: 1.25;
+   border-radius: 4px; }
+
+.datatable__select {
+   display: block;
+   margin-bottom: 10px; }
+
+.datatable__tasks-container:empty {
+   position: relative; }
+
+.datatable__tasks-container:empty::after {
+   content: 'Currently, there are no tasks available.'; }
 
 .template {
-  display: none;
-}
-
-fieldset {
-  border: none;
-}
+   display: none; }
