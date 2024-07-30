@@ -1,13 +1,29 @@
 $(document).ready(function() {
-  var apiRoot = 'https://3a098740-c4fb-4c8f-bc54-ac597329dea8-00-2fge5iq601k11.picard.replit.dev/v1/tasks';
-  var datatableRowTemplate = $('[data-datatable-row-template]').children()[0];
-  var tasksContainer = $('[data-tasks-container]');
+  const apiRoot = 'http://lohttps://3a098740-c4fb-4c8f-bc54-ac597329dea8-00-2fge5iq601k11.picard.replit.dev/v1/tasks';
+  const trelloApiRoot = 'https://3a098740-c4fb-4c8f-bc54-ac597329dea8-00-2fge5iq601k11.picard.replit.dev/v1/tasks';
+  const datatableRowTemplate = $('[data-datatable-row-template]').children()[0];
+  const $tasksContainer = $('[data-tasks-container]');
+
+  var availableBoards = {};
+  var availableTasks = {};
 
   // init
+
   getAllTasks();
 
+  function getAllAvailableBoards(callback, callbackArgs) {
+    var requestUrl = trelloApiRoot + '/boards';
+
+    $.ajax({
+      url: requestUrl,
+      method: 'GET',
+      contentType: 'application/json',
+      success: function(boards) { callback(callbackArgs, boards); }
+    });
+  }
+
   function createElement(data) {
-    var element = $(datatableRowTemplate).clone();
+    const element = $(datatableRowTemplate).clone();
 
     element.attr('data-task-id', data.id);
     element.find('[data-task-name-section] [data-task-name-paragraph]').text(data.title);
@@ -19,22 +35,46 @@ $(document).ready(function() {
     return element;
   }
 
-  function handleDatatableRender(data) {
-    tasksContainer.empty();
-    data.forEach(function(task) {
-      createElement(task).appendTo(tasksContainer);
+  function prepareBoardOrListSelectOptions(availableChoices) {
+    return availableChoices.map(function(choice) {
+      return $('<option>')
+          .addClass('crud-select__option')
+          .val(choice.id)
+          .text(choice.name || 'Unknown name');
+    });
+  }
+
+  function handleDatatableRender(taskData, boards) {
+    $tasksContainer.empty();
+    boards.forEach(board => {
+      availableBoards[board.id] = board;
+    });
+
+    taskData.forEach(function(task) {
+      var $datatableRowEl = createElement(task);
+      var $availableBoardsOptionElements = prepareBoardOrListSelectOptions(boards);
+
+      $datatableRowEl.find('[data-board-name-select]')
+          .append($availableBoardsOptionElements);
+
+      $datatableRowEl
+          .appendTo($tasksContainer);
     });
   }
 
   function getAllTasks() {
-    var requestUrl = apiRoot;
+    const requestUrl = apiRoot;
 
     $.ajax({
       url: requestUrl,
       method: 'GET',
-      success: handleDatatableRender,
-      error: function() {
-        alert('Failed to fetch tasks');
+      contentType: "application/json",
+      success: function(tasks) {
+        tasks.forEach(task => {
+          availableTasks[task.id] = task;
+        });
+
+        getAllAvailableBoards(handleDatatableRender, tasks);
       }
     });
   }
@@ -48,9 +88,10 @@ $(document).ready(function() {
 
     $.ajax({
       url: requestUrl,
-      method: 'PUT',
+      method: "PUT",
       processData: false,
-      contentType: 'application/json',
+      contentType: "application/json; charset=utf-8",
+      dataType: 'json',
       data: JSON.stringify({
         id: taskId,
         title: taskTitle,
@@ -58,11 +99,8 @@ $(document).ready(function() {
       }),
       success: function(data) {
         parentEl.attr('data-task-id', data.id).toggleClass('datatable__row--editing');
-        parentEl.find('[data-task-name-paragraph]').text(data.title);
-        parentEl.find('[data-task-content-paragraph]').text(data.content);
-      },
-      error: function() {
-        alert('Failed to update task');
+        parentEl.find('[data-task-name-paragraph]').text(taskTitle);
+        parentEl.find('[data-task-content-paragraph]').text(taskContent);
       }
     });
   }
@@ -70,18 +108,15 @@ $(document).ready(function() {
   function handleTaskDeleteRequest() {
     var parentEl = $(this).parents('[data-task-id]');
     var taskId = parentEl.attr('data-task-id');
-    var requestUrl = apiRoot + '?taskId=' + taskId;
+    var requestUrl = apiRoot;
 
     $.ajax({
-      url: requestUrl,
+      url: requestUrl + '/' + taskId,
       method: 'DELETE',
       success: function() {
         parentEl.slideUp(400, function() { parentEl.remove(); });
-      },
-      error: function() {
-        alert('Failed to delete task');
       }
-    });
+    })
   }
 
   function handleTaskSubmitRequest(event) {
@@ -96,16 +131,16 @@ $(document).ready(function() {
       url: requestUrl,
       method: 'POST',
       processData: false,
-      contentType: 'application/json',
+      contentType: "application/json; charset=utf-8",
+      dataType: 'json',
       data: JSON.stringify({
         title: taskTitle,
         content: taskContent
       }),
-      success: function(data) {
-        createElement(data).appendTo(tasksContainer);
-      },
-      error: function() {
-        alert('Failed to create task');
+      complete: function(data) {
+        if (data.status === 200) {
+          getAllTasks();
+        }
       }
     });
   }
@@ -121,10 +156,51 @@ $(document).ready(function() {
     parentEl.find('[data-task-content-input]').val(taskContent);
   }
 
+  function handleBoardNameSelect(event) {
+    var $changedSelectEl = $(event.target);
+    var selectedBoardId = $changedSelectEl.val();
+    var $listNameSelectEl = $changedSelectEl.siblings('[data-list-name-select]');
+    var preparedListOptions = prepareBoardOrListSelectOptions(availableBoards[selectedBoardId].lists);
+
+    $listNameSelectEl.empty().append(preparedListOptions);
+  }
+
+  function handleCardCreationRequest(event) {
+    var requestUrl = trelloApiRoot + '/cards';
+    var $relatedTaskRow = $(event.target).parents('[data-task-id]');
+    var relatedTaskId = $relatedTaskRow.attr('data-task-id');
+    var relatedTask = availableTasks[relatedTaskId];
+    var selectedListId = $relatedTaskRow.find('[data-list-name-select]').val();
+
+    if (!selectedListId) {
+      alert('You have to select a board and a list first!');
+      return;
+    }
+
+    $.ajax({
+      url: requestUrl,
+      method: 'POST',
+      processData: false,
+      contentType: "application/json; charset=utf-8",
+      dataType: 'json',
+      data: JSON.stringify({
+        name: relatedTask.title,
+        description: relatedTask.content,
+        listId: selectedListId
+      }),
+      success: function(data) {
+        console.log('Card created - ' + data.shortUrl);
+        alert('Card created - ' + data.shortUrl);
+      }
+    });
+  }
+
   $('[data-task-add-form]').on('submit', handleTaskSubmitRequest);
 
-  tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
-  tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
-  tasksContainer.on('click','[data-task-submit-update-button]', handleTaskUpdateRequest);
-  tasksContainer.on('click','[data-task-delete-button]', handleTaskDeleteRequest);
+  $tasksContainer.on('change','[data-board-name-select]', handleBoardNameSelect);
+  $tasksContainer.on('click','[data-trello-card-creation-trigger]', handleCardCreationRequest);
+  $tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
+  $tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
+  $tasksContainer.on('click','[data-task-submit-update-button]', handleTaskUpdateRequest);
+  $tasksContainer.on('click','[data-task-delete-button]', handleTaskDeleteRequest);
 });
