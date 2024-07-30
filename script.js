@@ -7,8 +7,7 @@ $(document).ready(function() {
   var availableBoards = {};
   var availableTasks = {};
 
-  // init
-
+  // Init
   getAllTasks();
 
   function getAllAvailableBoards(callback, callbackArgs) {
@@ -108,10 +107,10 @@ $(document).ready(function() {
   function handleTaskDeleteRequest() {
     var parentEl = $(this).parents('[data-task-id]');
     var taskId = parentEl.attr('data-task-id');
-    var requestUrl = apiRoot;
+    var requestUrl = apiRoot + '/' + taskId;
 
     $.ajax({
-      url: requestUrl + '/' + taskId,
+      url: requestUrl,
       method: 'DELETE',
       success: function() {
         parentEl.slideUp(400, function() { parentEl.remove(); });
@@ -197,10 +196,10 @@ $(document).ready(function() {
 
   $('[data-task-add-form]').on('submit', handleTaskSubmitRequest);
 
-  $tasksContainer.on('change','[data-board-name-select]', handleBoardNameSelect);
-  $tasksContainer.on('click','[data-trello-card-creation-trigger]', handleCardCreationRequest);
   $tasksContainer.on('click','[data-task-edit-button]', toggleEditingState);
   $tasksContainer.on('click','[data-task-edit-abort-button]', toggleEditingState);
   $tasksContainer.on('click','[data-task-submit-update-button]', handleTaskUpdateRequest);
   $tasksContainer.on('click','[data-task-delete-button]', handleTaskDeleteRequest);
+  $tasksContainer.on('change','[data-board-name-select]', handleBoardNameSelect);
+  $tasksContainer.on('click','[data-trello-card-creation-trigger]', handleCardCreationRequest);
 });
